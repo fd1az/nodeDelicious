@@ -3,4 +3,4 @@ import '../sass/style.scss';
 import { $, $$ } from './modules/bling';
 import autocomplete from  './modules/autocomplete';
 
-autocomplete($('#address'),$('#lat'),$('#lang'));
+autocomplete($('#address'),$('#lat'),$('#lng'));
