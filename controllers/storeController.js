@@ -31,7 +31,7 @@ exports.upload = multer(multerOptions).single('photo');
 exports.resize = async (req,res,next) =>{
     //check if there is no new file resize
     if(!req.file){
-        netx(); //skip to next middleware
+        next(); //skip to next middleware
         return;
     }
     const extension = req.file.mimetype.split('/')[1];
@@ -45,24 +45,31 @@ exports.resize = async (req,res,next) =>{
     
 }
 
-
-
 exports.createStore = async (req,res) => {
+    req.body.author = req.user._id;
     const store = await (new Store(req.body)).save();
     req.flash('success', `Successfully created ${store.name}. Care to leave a review?`)
     res.redirect(`/store/${store.slug}`);    
 }
 
 exports.getStores = async (req,res) =>{
+   
     // Query the database for a list of stores
     const stores = await Store.find()
     res.render('stores', {title:'Stores', stores})
+}
+
+const confirmOwner = (store,user)=>{
+    if(!store.author.equals(user._id)){
+        throw Error('You must own store in order to edit it!');
+    }
 }
 
 exports.editStore = async(req,res)=>{
     //find the store given the ID --> el id esta en los params probalo en res.json(req.params)  
     const store = await Store.findOne({_id: req.params.id});
     //confirm  they are the owner of the store
+    confirmOwner(store,req.user);
     //render out the edit form so the user can update their store
     res.render('editStore', {title:`Edit ${store.name}`, store})
 }
@@ -80,7 +87,7 @@ exports.updateStore = async (req, res) =>{
 }
 
 exports.getStoreBySlug = async(req, res, next)=>{
-    const store = await Store.findOne({slug: req.params.slug})
+    const store = await Store.findOne({slug: req.params.slug}).populate('author')
     if(!store) return next()
     res.render('store', {store, title:store.name});
 }
