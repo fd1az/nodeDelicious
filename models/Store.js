@@ -44,6 +44,15 @@ const storeSchema = new mongoose.Schema({
 
 });
 
+//defin our indexes
+
+storeSchema.index({
+    name:'text',
+    description:'text'
+});
+
+
+
 storeSchema.pre('save', async function(next){
     if(!this.isModified('name')){
         next();//skip it (salimos)
@@ -67,7 +76,6 @@ storeSchema.statics.getTagsList = function(req,res){
         {$sort: {count:-1}}
     ])
 }
-
 
 //exportamos el objeto
 module.exports = mongoose.model('Store',storeSchema);
