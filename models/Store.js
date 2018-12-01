@@ -51,6 +51,7 @@ storeSchema.index({
     description:'text'
 });
 
+storeSchema.index({location: '2dsphere'})
 
 
 storeSchema.pre('save', async function(next){
