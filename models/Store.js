@@ -68,6 +68,9 @@ storeSchema.pre('save', async function(next){
       this.slug = `${this.slug}-${storesWithSlug.length + 1}`;
     }
     next()
+},{
+    toJson:{virtuals: true},
+    toObject:{virtuals: true}
 })
 
 storeSchema.statics.getTagsList = function(req,res){
@@ -77,6 +80,14 @@ storeSchema.statics.getTagsList = function(req,res){
         {$sort: {count:-1}}
     ])
 }
+
+//Vitual query => finds reviews where the stores _id property === reviews store 
+storeSchema.virtual('reviews',{
+    ref:'Review', //What model to link?
+    localField: '_id',//Which field on the Store
+    foreignField: 'store' //Which field on the review
+})
+
 
 //exportamos el objeto
 module.exports = mongoose.model('Store',storeSchema);
