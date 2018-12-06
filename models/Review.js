@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise; //definimos es6 promise
 
 const reviewSchema = new mongoose.Schema({
-    created: Date,
+    created: {
+        type: Date,
+        default: Date.now
+      },
     author: {
         type: mongoose.Schema.ObjectId,
         ref: 'User',
